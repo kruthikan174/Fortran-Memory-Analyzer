@@ -1,0 +1,73 @@
+{
+  "summary": {
+    "total_blocks": 3,
+    "blocks_with_issues": 2,
+    "total_issues": 4
+  },
+  "blocks": {
+    "COMBLA": {
+      "declared_in": [
+        "lapack-3.12.0\\BLAS\\TESTING\\cblat1.f",
+        "lapack-3.12.0\\BLAS\\TESTING\\dblat1.f",
+        "lapack-3.12.0\\BLAS\\TESTING\\sblat1.f",
+        "lapack-3.12.0\\BLAS\\TESTING\\zblat1.f",
+        "lapack-3.12.0\\CBLAS\\testing\\c_cblat1.f",
+        "lapack-3.12.0\\CBLAS\\testing\\c_dblat1.f",
+        "lapack-3.12.0\\CBLAS\\testing\\c_sblat1.f",
+        "lapack-3.12.0\\CBLAS\\testing\\c_zblat1.f"
+      ],
+      "issues": [
+        "[SIZE MISMATCH] /COMBLA/\n    lapack-3.12.0\\BLAS\\TESTING\\cblat1.f \u2192 144 bytes, lapack-3.12.0\\BLAS\\TESTING\\dblat1.f \u2192 180 bytes, lapack-3.12.0\\BLAS\\TESTING\\sblat1.f \u2192 160 bytes, lapack-3.12.0\\BLAS\\TESTING\\zblat1.f \u2192 144 bytes, lapack-3.12.0\\CBLAS\\testing\\c_cblat1.f \u2192 144 bytes, lapack-3.12.0\\CBLAS\\testing\\c_dblat1.f \u2192 192 bytes, lapack-3.12.0\\CBLAS\\testing\\c_sblat1.f \u2192 192 bytes, lapack-3.12.0\\CBLAS\\testing\\c_zblat1.f \u2192 144 bytes",
+        "[EQUIVALENCE WARNING] /COMBLA/ in lapack-3.12.0\\BLAS\\TESTING\\dblat1.f\n    EQUIVALENCE statements present \u2014 offsets may be shifted: [{'raw': 'DT19X(1,1,1),DT19XA(1,1,1)),(DT19X(1,1,5', 'involves_common': True}, {'raw': 'DT19Y(1,1,1),DT19YA(1,1,1)),(DT19Y(1,1,5', 'involves_common': True}]",
+        "[EQUIVALENCE WARNING] /COMBLA/ in lapack-3.12.0\\BLAS\\TESTING\\sblat1.f\n    EQUIVALENCE statements present \u2014 offsets may be shifted: [{'raw': 'DT19X(1,1,1),DT19XA(1,1,1)),(DT19X(1,1,5', 'involves_common': True}, {'raw': 'DT19Y(1,1,1),DT19YA(1,1,1)),(DT19Y(1,1,5', 'involves_common': True}]"
+      ],
+      "clean": false
+    },
+    "INFOC": {
+      "declared_in": [
+        "lapack-3.12.0\\BLAS\\TESTING\\cblat2.f",
+        "lapack-3.12.0\\BLAS\\TESTING\\cblat3.f",
+        "lapack-3.12.0\\BLAS\\TESTING\\dblat2.f",
+        "lapack-3.12.0\\BLAS\\TESTING\\dblat3.f",
+        "lapack-3.12.0\\BLAS\\TESTING\\sblat2.f",
+        "lapack-3.12.0\\BLAS\\TESTING\\sblat3.f",
+        "lapack-3.12.0\\BLAS\\TESTING\\zblat2.f",
+        "lapack-3.12.0\\BLAS\\TESTING\\zblat3.f",
+        "lapack-3.12.0\\CBLAS\\testing\\c_cblat2.f",
+        "lapack-3.12.0\\CBLAS\\testing\\c_cblat3.f",
+        "lapack-3.12.0\\CBLAS\\testing\\c_dblat2.f",
+        "lapack-3.12.0\\CBLAS\\testing\\c_dblat3.f",
+        "lapack-3.12.0\\CBLAS\\testing\\c_sblat2.f",
+        "lapack-3.12.0\\CBLAS\\testing\\c_sblat3.f",
+        "lapack-3.12.0\\CBLAS\\testing\\c_zblat2.f",
+        "lapack-3.12.0\\CBLAS\\testing\\c_zblat3.f"
+      ],
+      "issues": [
+        "[SIZE MISMATCH] /INFOC/\n    lapack-3.12.0\\BLAS\\TESTING\\cblat2.f \u2192 144 bytes, lapack-3.12.0\\BLAS\\TESTING\\cblat3.f \u2192 128 bytes, lapack-3.12.0\\BLAS\\TESTING\\dblat2.f \u2192 144 bytes, lapack-3.12.0\\BLAS\\TESTING\\dblat3.f \u2192 128 bytes, lapack-3.12.0\\BLAS\\TESTING\\sblat2.f \u2192 144 bytes, lapack-3.12.0\\BLAS\\TESTING\\sblat3.f \u2192 128 bytes, lapack-3.12.0\\BLAS\\TESTING\\zblat2.f \u2192 144 bytes, lapack-3.12.0\\BLAS\\TESTING\\zblat3.f \u2192 128 bytes, lapack-3.12.0\\CBLAS\\testing\\c_cblat2.f \u2192 84 bytes, lapack-3.12.0\\CBLAS\\testing\\c_cblat3.f \u2192 96 bytes, lapack-3.12.0\\CBLAS\\testing\\c_dblat2.f \u2192 84 bytes, lapack-3.12.0\\CBLAS\\testing\\c_dblat3.f \u2192 72 bytes, lapack-3.12.0\\CBLAS\\testing\\c_sblat2.f \u2192 84 bytes, lapack-3.12.0\\CBLAS\\testing\\c_sblat3.f \u2192 72 bytes, lapack-3.12.0\\CBLAS\\testing\\c_zblat2.f \u2192 84 bytes, lapack-3.12.0\\CBLAS\\testing\\c_zblat3.f \u2192 96 bytes"
+      ],
+      "clean": false
+    },
+    "SRNAMC": {
+      "declared_in": [
+        "lapack-3.12.0\\BLAS\\TESTING\\cblat2.f",
+        "lapack-3.12.0\\BLAS\\TESTING\\cblat3.f",
+        "lapack-3.12.0\\BLAS\\TESTING\\dblat2.f",
+        "lapack-3.12.0\\BLAS\\TESTING\\dblat3.f",
+        "lapack-3.12.0\\BLAS\\TESTING\\sblat2.f",
+        "lapack-3.12.0\\BLAS\\TESTING\\sblat3.f",
+        "lapack-3.12.0\\BLAS\\TESTING\\zblat2.f",
+        "lapack-3.12.0\\BLAS\\TESTING\\zblat3.f",
+        "lapack-3.12.0\\CBLAS\\testing\\c_cblat2.f",
+        "lapack-3.12.0\\CBLAS\\testing\\c_cblat3.f",
+        "lapack-3.12.0\\CBLAS\\testing\\c_dblat2.f",
+        "lapack-3.12.0\\CBLAS\\testing\\c_dblat3.f",
+        "lapack-3.12.0\\CBLAS\\testing\\c_sblat2.f",
+        "lapack-3.12.0\\CBLAS\\testing\\c_sblat3.f",
+        "lapack-3.12.0\\CBLAS\\testing\\c_zblat2.f",
+        "lapack-3.12.0\\CBLAS\\testing\\c_zblat3.f"
+      ],
+      "issues": [],
+      "clean": true
+    }
+  }
+}

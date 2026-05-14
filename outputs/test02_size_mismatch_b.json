@@ -1,0 +1,24 @@
+{
+  "file": "tests/fortran_samples/test02_size_mismatch_b.f90",
+  "common_blocks": [
+    {
+      "name": "BIGBLOCK",
+      "total_size": 800,
+      "saved": false,
+      "source_file": "tests/fortran_samples/test02_size_mismatch_b.f90",
+      "line_number": -1,
+      "variables": [
+        {
+          "name": "I",
+          "type": "INTEGER",
+          "kind": 4,
+          "dimensions": [200],
+          "size_bytes": 800,
+          "offset": 0,
+          "char_len": 1
+        }
+      ]
+    }
+  ],
+  "equivalences": []
+}

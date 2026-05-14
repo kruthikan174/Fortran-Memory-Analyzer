@@ -1,0 +1,33 @@
+{
+  "file": "tests/fortran_samples/test04_alignment.f90",
+  "common_blocks": [
+    {
+      "name": "ALIGNTEST",
+      "total_size": 16,
+      "saved": false,
+      "source_file": "tests/fortran_samples/test04_alignment.f90",
+      "line_number": -1,
+      "variables": [
+        {
+          "name": "PAD",
+          "type": "REAL",
+          "kind": 4,
+          "dimensions": [],
+          "size_bytes": 4,
+          "offset": 0,
+          "char_len": 1
+        },
+        {
+          "name": "D",
+          "type": "DOUBLE_PRECISION",
+          "kind": 8,
+          "dimensions": [],
+          "size_bytes": 8,
+          "offset": 8,
+          "char_len": 1
+        }
+      ]
+    }
+  ],
+  "equivalences": []
+}

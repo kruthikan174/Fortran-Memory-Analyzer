@@ -1,0 +1,36 @@
+============================================================
+  MIGRATION ADVICE: /INFOC/
+============================================================
+  Declared in 16 file(s):
+    - lapack-3.12.0\BLAS\TESTING\cblat2.f
+    - lapack-3.12.0\BLAS\TESTING\cblat3.f
+    - lapack-3.12.0\BLAS\TESTING\dblat2.f
+    - lapack-3.12.0\BLAS\TESTING\dblat3.f
+    - lapack-3.12.0\BLAS\TESTING\sblat2.f
+    - lapack-3.12.0\BLAS\TESTING\sblat3.f
+    - lapack-3.12.0\BLAS\TESTING\zblat2.f
+    - lapack-3.12.0\BLAS\TESTING\zblat3.f
+    - lapack-3.12.0\CBLAS\testing\c_cblat2.f
+    - lapack-3.12.0\CBLAS\testing\c_cblat3.f
+    - lapack-3.12.0\CBLAS\testing\c_dblat2.f
+    - lapack-3.12.0\CBLAS\testing\c_dblat3.f
+    - lapack-3.12.0\CBLAS\testing\c_sblat2.f
+    - lapack-3.12.0\CBLAS\testing\c_sblat3.f
+    - lapack-3.12.0\CBLAS\testing\c_zblat2.f
+    - lapack-3.12.0\CBLAS\testing\c_zblat3.f
+
+  STATUS: ✗ UNSAFE — 1 violation(s) found
+  Cannot auto-migrate until violations are fixed.
+
+  ── Violations ──
+  [SIZE MISMATCH] /INFOC/
+      lapack-3.12.0\BLAS\TESTING\cblat2.f → 144 bytes, lapack-3.12.0\BLAS\TESTING\cblat3.f → 128 bytes, lapack-3.12.0\BLAS\TESTING\dblat2.f → 144 bytes, lapack-3.12.0\BLAS\TESTING\dblat3.f → 128 bytes, lapack-3.12.0\BLAS\TESTING\sblat2.f → 144 bytes, lapack-3.12.0\BLAS\TESTING\sblat3.f → 128 bytes, lapack-3.12.0\BLAS\TESTING\zblat2.f → 144 bytes, lapack-3.12.0\BLAS\TESTING\zblat3.f → 128 bytes, lapack-3.12.0\CBLAS\testing\c_cblat2.f → 84 bytes, lapack-3.12.0\CBLAS\testing\c_cblat3.f → 96 bytes, lapack-3.12.0\CBLAS\testing\c_dblat2.f → 84 bytes, lapack-3.12.0\CBLAS\testing\c_dblat3.f → 72 bytes, lapack-3.12.0\CBLAS\testing\c_sblat2.f → 84 bytes, lapack-3.12.0\CBLAS\testing\c_sblat3.f → 72 bytes, lapack-3.12.0\CBLAS\testing\c_zblat2.f → 84 bytes, lapack-3.12.0\CBLAS\testing\c_zblat3.f → 96 bytes
+
+  ── Remediation Steps ──
+  [SIZE MISMATCH FIX]
+  The authoritative declaration (largest) is in:
+    lapack-3.12.0\BLAS\TESTING\cblat2.f → 144 bytes
+  Action: Audit all other declarations and align them to this size.
+  Once sizes match, re-run the advisor to generate the MODULE.
+
+============================================================

@@ -1,0 +1,23 @@
+============================================================
+  MIGRATION ADVICE: /PERSIST/
+============================================================
+  Declared in 2 file(s):
+    - tests/fortran_samples/test06_save_inconsistent_a.f90
+    - tests/fortran_samples/test06_save_inconsistent_b.f90
+
+  STATUS: ✗ UNSAFE — 1 violation(s) found
+  Cannot auto-migrate until violations are fixed.
+
+  ── Violations ──
+  [SAVE INCONSISTENCY] /PERSIST/
+      SAVE declared in:     ['tests/fortran_samples/test06_save_inconsistent_a.f90']
+      No SAVE declared in:  ['tests/fortran_samples/test06_save_inconsistent_b.f90']
+
+  ── Remediation Steps ──
+  [SAVE INCONSISTENCY FIX]
+  Some files declare SAVE, others do not.
+  Action: Add SAVE to all declarations of /PERSIST/,
+  or remove it from all. The MODULE approach (when violations
+  are fixed) automatically handles persistence via module variables.
+
+============================================================

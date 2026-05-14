@@ -1,0 +1,69 @@
+{
+  "file": "tests/fortran_samples/test10_multiple_blocks.f90",
+  "common_blocks": [
+    {
+      "name": "PHYSICS_CONST",
+      "total_size": 16,
+      "saved": true,
+      "source_file": "tests/fortran_samples/test10_multiple_blocks.f90",
+      "line_number": -1,
+      "variables": [
+        {
+          "name": "PI",
+          "type": "DOUBLE_PRECISION",
+          "kind": 8,
+          "dimensions": [],
+          "size_bytes": 8,
+          "offset": 0,
+          "char_len": 1
+        },
+        {
+          "name": "E_CONST",
+          "type": "DOUBLE_PRECISION",
+          "kind": 8,
+          "dimensions": [],
+          "size_bytes": 8,
+          "offset": 8,
+          "char_len": 1
+        }
+      ]
+    },
+    {
+      "name": "SIM_STATE",
+      "total_size": 12,
+      "saved": true,
+      "source_file": "tests/fortran_samples/test10_multiple_blocks.f90",
+      "line_number": -1,
+      "variables": [
+        {
+          "name": "STEP",
+          "type": "INTEGER",
+          "kind": 4,
+          "dimensions": [],
+          "size_bytes": 4,
+          "offset": 0,
+          "char_len": 1
+        },
+        {
+          "name": "TIME",
+          "type": "REAL",
+          "kind": 4,
+          "dimensions": [],
+          "size_bytes": 4,
+          "offset": 4,
+          "char_len": 1
+        },
+        {
+          "name": "DT",
+          "type": "REAL",
+          "kind": 4,
+          "dimensions": [],
+          "size_bytes": 4,
+          "offset": 8,
+          "char_len": 1
+        }
+      ]
+    }
+  ],
+  "equivalences": []
+}

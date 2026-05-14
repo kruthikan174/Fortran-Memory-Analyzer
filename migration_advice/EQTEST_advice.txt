@@ -1,0 +1,23 @@
+============================================================
+  MIGRATION ADVICE: /EQTEST/
+============================================================
+  Declared in 1 file(s):
+    - tests/fortran_samples/test05_equivalence.f90
+
+  STATUS: ✗ UNSAFE — 1 violation(s) found
+  Cannot auto-migrate until violations are fixed.
+
+  ── Violations ──
+  [EQUIVALENCE WARNING] /EQTEST/ in tests/fortran_samples/test05_equivalence.f90
+      EQUIVALENCE statements present — offsets may be shifted: [{'var_a': 'X', 'index_a': 1, 'var_b': 'XALIAS', 'index_b': 1, 'involves_common': True, 'common_block': 'EQTEST', 'causes_extension': False, 'offset_shift': 0}]
+
+  ── Remediation Steps ──
+  [EQUIVALENCE FIX]
+  EQUIVALENCE statements alias variables inside this COMMON block.
+  This can silently shift variable offsets and is not portable.
+  Action:
+    - Replace array aliasing with explicit POINTER associations
+      or pass the array as a subroutine argument.
+    - After removing EQUIVALENCE, re-run the advisor.
+
+============================================================

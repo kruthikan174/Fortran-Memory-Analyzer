@@ -1,0 +1,40 @@
+============================================================
+  MIGRATION ADVICE: /COMBLA/
+============================================================
+  Declared in 8 file(s):
+    - lapack-3.12.0\BLAS\TESTING\cblat1.f
+    - lapack-3.12.0\BLAS\TESTING\dblat1.f
+    - lapack-3.12.0\BLAS\TESTING\sblat1.f
+    - lapack-3.12.0\BLAS\TESTING\zblat1.f
+    - lapack-3.12.0\CBLAS\testing\c_cblat1.f
+    - lapack-3.12.0\CBLAS\testing\c_dblat1.f
+    - lapack-3.12.0\CBLAS\testing\c_sblat1.f
+    - lapack-3.12.0\CBLAS\testing\c_zblat1.f
+
+  STATUS: ✗ UNSAFE — 3 violation(s) found
+  Cannot auto-migrate until violations are fixed.
+
+  ── Violations ──
+  [SIZE MISMATCH] /COMBLA/
+      lapack-3.12.0\BLAS\TESTING\cblat1.f → 144 bytes, lapack-3.12.0\BLAS\TESTING\dblat1.f → 180 bytes, lapack-3.12.0\BLAS\TESTING\sblat1.f → 160 bytes, lapack-3.12.0\BLAS\TESTING\zblat1.f → 144 bytes, lapack-3.12.0\CBLAS\testing\c_cblat1.f → 144 bytes, lapack-3.12.0\CBLAS\testing\c_dblat1.f → 192 bytes, lapack-3.12.0\CBLAS\testing\c_sblat1.f → 192 bytes, lapack-3.12.0\CBLAS\testing\c_zblat1.f → 144 bytes
+  [EQUIVALENCE WARNING] /COMBLA/ in lapack-3.12.0\BLAS\TESTING\dblat1.f
+      EQUIVALENCE statements present — offsets may be shifted: [{'raw': 'DT19X(1,1,1),DT19XA(1,1,1)),(DT19X(1,1,5', 'involves_common': True}, {'raw': 'DT19Y(1,1,1),DT19YA(1,1,1)),(DT19Y(1,1,5', 'involves_common': True}]
+  [EQUIVALENCE WARNING] /COMBLA/ in lapack-3.12.0\BLAS\TESTING\sblat1.f
+      EQUIVALENCE statements present — offsets may be shifted: [{'raw': 'DT19X(1,1,1),DT19XA(1,1,1)),(DT19X(1,1,5', 'involves_common': True}, {'raw': 'DT19Y(1,1,1),DT19YA(1,1,1)),(DT19Y(1,1,5', 'involves_common': True}]
+
+  ── Remediation Steps ──
+  [SIZE MISMATCH FIX]
+  The authoritative declaration (largest) is in:
+    lapack-3.12.0\CBLAS\testing\c_dblat1.f → 192 bytes
+  Action: Audit all other declarations and align them to this size.
+  Once sizes match, re-run the advisor to generate the MODULE.
+
+  [EQUIVALENCE FIX]
+  EQUIVALENCE statements alias variables inside this COMMON block.
+  This can silently shift variable offsets and is not portable.
+  Action:
+    - Replace array aliasing with explicit POINTER associations
+      or pass the array as a subroutine argument.
+    - After removing EQUIVALENCE, re-run the advisor.
+
+============================================================

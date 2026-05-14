@@ -1,0 +1,24 @@
+{
+  "file": "tests/fortran_samples/test06_save_inconsistent_a.f90",
+  "common_blocks": [
+    {
+      "name": "PERSIST",
+      "total_size": 4,
+      "saved": true,
+      "source_file": "tests/fortran_samples/test06_save_inconsistent_a.f90",
+      "line_number": -1,
+      "variables": [
+        {
+          "name": "COUNTER",
+          "type": "INTEGER",
+          "kind": 4,
+          "dimensions": [],
+          "size_bytes": 4,
+          "offset": 0,
+          "char_len": 1
+        }
+      ]
+    }
+  ],
+  "equivalences": []
+}

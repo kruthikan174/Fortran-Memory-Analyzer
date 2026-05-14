@@ -1,0 +1,100 @@
+{
+  "summary": {
+    "total_blocks": 11,
+    "blocks_with_issues": 4,
+    "total_issues": 6
+  },
+  "blocks": {
+    "ALIGNTEST": {
+      "declared_in": [
+        "tests/fortran_samples/test04_alignment.f90"
+      ],
+      "issues": [],
+      "clean": true
+    },
+    "BIGBLOCK": {
+      "declared_in": [
+        "tests/fortran_samples/test02_size_mismatch_a.f90",
+        "tests/fortran_samples/test02_size_mismatch_b.f90"
+      ],
+      "issues": [
+        "[SIZE MISMATCH] /BIGBLOCK/\n    tests/fortran_samples/test02_size_mismatch_a.f90 \u2192 400 bytes, tests/fortran_samples/test02_size_mismatch_b.f90 \u2192 800 bytes",
+        "[TYPE PUNNING] /BIGBLOCK/ at offset 0 bytes\n    tests/fortran_samples/test02_size_mismatch_a.f90 declares 'X' as REAL(kind=4), tests/fortran_samples/test02_size_mismatch_b.f90 declares 'I' as INTEGER(kind=4)"
+      ],
+      "clean": false
+    },
+    "EQTEST": {
+      "declared_in": [
+        "tests/fortran_samples/test05_equivalence.f90"
+      ],
+      "issues": [
+        "[EQUIVALENCE WARNING] /EQTEST/ in tests/fortran_samples/test05_equivalence.f90\n    EQUIVALENCE statements present \u2014 offsets may be shifted: [{'var_a': 'X', 'index_a': 1, 'var_b': 'XALIAS', 'index_b': 1, 'involves_common': True, 'common_block': 'EQTEST', 'causes_extension': False, 'offset_shift': 0}]"
+      ],
+      "clean": false
+    },
+    "MATRICES": {
+      "declared_in": [
+        "tests/fortran_samples/test08_multidim.f90"
+      ],
+      "issues": [],
+      "clean": true
+    },
+    "MYDATA": {
+      "declared_in": [
+        "tests/fortran_samples/test01_file_a.f90",
+        "tests/fortran_samples/test01_file_b.f90"
+      ],
+      "issues": [],
+      "clean": true
+    },
+    "PERSIST": {
+      "declared_in": [
+        "tests/fortran_samples/test06_save_inconsistent_a.f90",
+        "tests/fortran_samples/test06_save_inconsistent_b.f90"
+      ],
+      "issues": [
+        "[SAVE INCONSISTENCY] /PERSIST/\n    SAVE declared in:     ['tests/fortran_samples/test06_save_inconsistent_a.f90']\n    No SAVE declared in:  ['tests/fortran_samples/test06_save_inconsistent_b.f90']"
+      ],
+      "clean": false
+    },
+    "PHYSICS": {
+      "declared_in": [
+        "tests/fortran_samples/test03_type_punning_a.f90",
+        "tests/fortran_samples/test03_type_punning_b.f90"
+      ],
+      "issues": [
+        "[TYPE PUNNING] /PHYSICS/ at offset 0 bytes\n    tests/fortran_samples/test03_type_punning_a.f90 declares 'VOLTAGE' as REAL(kind=4), tests/fortran_samples/test03_type_punning_b.f90 declares 'IRAW' as INTEGER(kind=4)",
+        "[TYPE PUNNING] /PHYSICS/ at offset 4 bytes\n    tests/fortran_samples/test03_type_punning_a.f90 declares 'CURRENT' as REAL(kind=4), tests/fortran_samples/test03_type_punning_b.f90 declares 'IRAW2' as INTEGER(kind=4)"
+      ],
+      "clean": false
+    },
+    "PHYSICS_CONST": {
+      "declared_in": [
+        "tests/fortran_samples/test10_multiple_blocks.f90"
+      ],
+      "issues": [],
+      "clean": true
+    },
+    "SIM_STATE": {
+      "declared_in": [
+        "tests/fortran_samples/test10_multiple_blocks.f90"
+      ],
+      "issues": [],
+      "clean": true
+    },
+    "STRINGS": {
+      "declared_in": [
+        "tests/fortran_samples/test09_character.f90"
+      ],
+      "issues": [],
+      "clean": true
+    },
+    "__BLANK_COMMON__": {
+      "declared_in": [
+        "tests/fortran_samples/test07_blank_common.f90"
+      ],
+      "issues": [],
+      "clean": true
+    }
+  }
+}

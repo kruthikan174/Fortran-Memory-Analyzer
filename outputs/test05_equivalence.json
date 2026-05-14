@@ -1,0 +1,44 @@
+{
+  "file": "tests/fortran_samples/test05_equivalence.f90",
+  "common_blocks": [
+    {
+      "name": "EQTEST",
+      "total_size": 8,
+      "saved": false,
+      "source_file": "tests/fortran_samples/test05_equivalence.f90",
+      "line_number": -1,
+      "variables": [
+        {
+          "name": "X",
+          "type": "REAL",
+          "kind": 4,
+          "dimensions": [],
+          "size_bytes": 4,
+          "offset": 0,
+          "char_len": 1
+        },
+        {
+          "name": "Y",
+          "type": "REAL",
+          "kind": 4,
+          "dimensions": [],
+          "size_bytes": 4,
+          "offset": 4,
+          "char_len": 1
+        }
+      ]
+    }
+  ],
+  "equivalences": [
+    {
+      "var_a": "X",
+      "index_a": 1,
+      "var_b": "XALIAS",
+      "index_b": 1,
+      "involves_common": true,
+      "common_block": "EQTEST",
+      "causes_extension": false,
+      "offset_shift": 0
+    }
+  ]
+}

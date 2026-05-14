@@ -1,0 +1,35 @@
+============================================================
+  MIGRATION ADVICE: /BIGBLOCK/
+============================================================
+  Declared in 2 file(s):
+    - tests/fortran_samples/test02_size_mismatch_a.f90
+    - tests/fortran_samples/test02_size_mismatch_b.f90
+
+  STATUS: ✗ UNSAFE — 2 violation(s) found
+  Cannot auto-migrate until violations are fixed.
+
+  ── Violations ──
+  [SIZE MISMATCH] /BIGBLOCK/
+      tests/fortran_samples/test02_size_mismatch_a.f90 → 400 bytes, tests/fortran_samples/test02_size_mismatch_b.f90 → 800 bytes
+  [TYPE PUNNING] /BIGBLOCK/ at offset 0 bytes
+      tests/fortran_samples/test02_size_mismatch_a.f90 declares 'X' as REAL(kind=4), tests/fortran_samples/test02_size_mismatch_b.f90 declares 'I' as INTEGER(kind=4)
+
+  ── Remediation Steps ──
+  [SIZE MISMATCH FIX]
+  The authoritative declaration (largest) is in:
+    tests/fortran_samples/test02_size_mismatch_b.f90 → 800 bytes
+  Action: Audit all other declarations and align them to this size.
+  Once sizes match, re-run the advisor to generate the MODULE.
+
+  [TYPE PUNNING / KIND MISMATCH FIX]
+  Variables at the same memory offset have incompatible types.
+  This is intentional type-punning (reading bits as a different type)
+  or an accidental bug.
+  Action:
+    - If intentional: use TRANSFER() intrinsic in Fortran 90
+      instead of COMMON block aliasing.
+      Example: i_val = TRANSFER(real_val, i_val)
+    - If accidental: correct the type declarations so all files
+      agree on the type at each offset.
+
+============================================================

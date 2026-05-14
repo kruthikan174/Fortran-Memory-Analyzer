@@ -1,0 +1,42 @@
+{
+  "file": "tests/fortran_samples/test08_multidim.f90",
+  "common_blocks": [
+    {
+      "name": "MATRICES",
+      "total_size": 140,
+      "saved": false,
+      "source_file": "tests/fortran_samples/test08_multidim.f90",
+      "line_number": -1,
+      "variables": [
+        {
+          "name": "A",
+          "type": "DOUBLE_PRECISION",
+          "kind": 8,
+          "dimensions": [3, 4],
+          "size_bytes": 96,
+          "offset": 0,
+          "char_len": 1
+        },
+        {
+          "name": "B",
+          "type": "INTEGER",
+          "kind": 4,
+          "dimensions": [2, 5],
+          "size_bytes": 40,
+          "offset": 96,
+          "char_len": 1
+        },
+        {
+          "name": "SCALAR",
+          "type": "REAL",
+          "kind": 4,
+          "dimensions": [],
+          "size_bytes": 4,
+          "offset": 136,
+          "char_len": 1
+        }
+      ]
+    }
+  ],
+  "equivalences": []
+}
