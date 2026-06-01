@@ -1,284 +1,314 @@
-# Part 1 — Fortran COMMON Block Data Extraction (C++)
+Fortran COMMON Block Data Extraction Framework
 
-## What This Is
+Overview
 
-You are **Person 1** in the 3-person team. Your job is to build the **Collector** — the tool that reads Fortran source files and emits structured JSON describing the memory layout of every `COMMON` block found in each file.
+This project provides an automated way to extract and represent Fortran "COMMON" block information in a structured JSON format. It is designed to assist in the analysis and modernization of legacy Fortran applications where shared memory through "COMMON" blocks is widely used.
 
-Person 2 (validator) and Person 3 (CLI + tests) are entirely dependent on your JSON output being accurate and schema-consistent. **You are the data source of the whole pipeline.**
+The project is divided into three independent modules:
 
----
+1. Collector – Extracts COMMON block information from Fortran source files.
+2. Validator – Checks extracted data for inconsistencies and potential issues.
+3. CLI & Reporting – Provides user interaction and report generation.
 
-## Architecture
-
-```
-Fortran .f/.f90 file
-        │
-        ▼
-  FlangRunner          → runs: flang-new -fc1 -fdebug-dump-symbols file.f90
-        │
-        ▼
-  SymbolDumpParser     → parses the text output into CommonBlockDef structs
-        │
-        ▼
-  EquivalenceResolver  → parses EQUIVALENCE statements, computes offset shifts
-        │
-        ▼
-  JsonSerializer       → emits the final JSON file
-```
-
-### Header files (include/)
-| File | Purpose |
-|---|---|
-| `common_block.hpp` | Core data structures: `Variable`, `CommonBlockDef`, `TranslationUnit` |
-| `flang_runner.hpp` | Subprocess wrapper around `flang-new` |
-| `symbol_dump_parser.hpp` | Parses Flang's `-fdebug-dump-symbols` text output |
-| `equivalence_resolver.hpp` | Handles `EQUIVALENCE` offset shifts |
-| `json_serializer.hpp` | Converts structs → JSON strings (no external deps) |
-
-### Source files (src/)
-| File | Purpose |
-|---|---|
-| `collector.cpp` | `main()` — processes one file, writes one JSON |
-| `batch_collect.cpp` | Walks a directory, runs collector on every Fortran file |
+This repository contains the implementation of the Collector Module.
 
 ---
 
-## Requirements
+Problem Statement
 
-### System
-- Linux or macOS (WSL2 works on Windows)
-- g++ or clang++ with C++17 support
-- CMake 3.15+ (optional — `build.sh` works without it)
-- **flang-new** (LLVM Flang frontend)
+Legacy Fortran applications often rely on "COMMON" blocks to share variables across multiple program units. As projects grow larger, manually identifying memory layouts, variable offsets, and shared data structures becomes difficult.
 
-### Install Flang
-
-**Ubuntu/Debian:**
-```bash
-sudo apt install flang-18
-# or
-sudo apt install flang-new
-```
-
-**macOS (Homebrew):**
-```bash
-brew install llvm
-export PATH="$(brew --prefix llvm)/bin:$PATH"
-```
-
-**Verify:**
-```bash
-flang-new --version
-```
-
-If flang-new is at a non-standard path, use:
-```bash
-export FLANG_PATH=/path/to/flang-new
-```
+The objective of this module is to automatically identify COMMON blocks and generate machine-readable metadata that can be used for further validation and analysis.
 
 ---
 
-## Build
+Module Responsibilities
 
-### With build.sh (recommended, no cmake needed)
-```bash
-chmod +x build.sh
-./build.sh          # release
-./build.sh debug    # with -g for debugging
-./build.sh clean    # remove build/
-```
+The Collector module performs the following tasks:
 
-### With CMake
-```bash
-mkdir build && cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release
-make -j$(nproc)
-```
+- Reads Fortran source files (".f", ".f90")
+- Invokes LLVM Flang compiler tools
+- Extracts symbol table information
+- Detects COMMON block definitions
+- Retrieves variable information
+- Calculates memory layout details
+- Exports structured JSON output
 
-### Manually
-```bash
-g++ -std=c++17 -O2 -Iinclude -o build/collector src/collector.cpp
-g++ -std=c++17 -O2 -Iinclude -o build/batch_collect src/batch_collect.cpp
-```
+The generated JSON acts as the input for downstream validation and reporting modules.
 
 ---
 
-## Usage
+System Workflow
 
-### Single file
-```bash
-./build/collector path/to/file.f90 outputs/file.json
-```
-
-### Multiple files (batch mode)
-```bash
-./build/batch_collect path/to/fortran_project/ outputs/
-```
-
-### Custom flang path
-```bash
-FLANG_PATH=/usr/bin/flang-18 ./build/collector file.f90
-```
+Fortran Source File
+        |
+        v
+   FlangRunner
+        |
+        v
+ Symbol Dump Output
+        |
+        v
+ SymbolDumpParser
+        |
+        v
+ CommonBlock Objects
+        |
+        v
+  JSON Exporter
+        |
+        v
+   Output JSON
 
 ---
 
-## JSON Output Schema
+Technologies Used
 
-Every output file follows this exact schema (Person 2 and 3 depend on it — **do not change field names**):
+Technology| Purpose
+C++17| Core implementation
+LLVM Flang| Symbol extraction
+STL| Data structures and utilities
+nlohmann/json| JSON serialization
+Regex| Parsing compiler output
+CMake| Build configuration
 
-```json
+---
+
+Project Structure
+
+src/
+│
+├── FlangRunner.h
+├── FlangRunner.cpp
+│
+├── SymbolDumpParser.h
+├── SymbolDumpParser.cpp
+│
+├── CommonBlockDef.h
+│
+├── JsonExporter.h
+├── JsonExporter.cpp
+│
+└── main.cpp
+
+tests/
+
+docs/
+
+CMakeLists.txt
+README.md
+
+---
+
+Core Components
+
+1. FlangRunner
+
+Responsible for invoking the LLVM Flang compiler and collecting symbol dump information.
+
+Example command:
+
+flang-new -fc1 -fdebug-dump-symbols sample.f90
+
+Output from the compiler is captured and forwarded to the parser.
+
+---
+
+2. SymbolDumpParser
+
+Processes the compiler-generated symbol dump and extracts:
+
+- COMMON block names
+- Variable names
+- Data types
+- Memory offsets
+- Storage sizes
+
+The extracted information is converted into internal C++ data structures.
+
+---
+
+3. JSON Exporter
+
+Converts parsed data into a standardized JSON format.
+
+Example:
+
 {
-  "file": "path/to/file.f90",
+  "file": "sample.f90",
   "common_blocks": [
     {
-      "name": "MYDATA",
-      "total_size": 404,
-      "saved": true,
-      "source_file": "path/to/file.f90",
-      "line_number": -1,
-      "variables": [
+      "name": "BLOCK1",
+      "members": [
         {
-          "name": "X",
+          "name": "A",
           "type": "REAL",
-          "kind": 4,
-          "dimensions": [100],
-          "size_bytes": 400,
-          "offset": 0,
-          "char_len": 1
+          "size": 4,
+          "offset": 0
         },
         {
-          "name": "N",
+          "name": "B",
           "type": "INTEGER",
-          "kind": 4,
-          "dimensions": [],
-          "size_bytes": 4,
-          "offset": 400,
-          "char_len": 1
+          "size": 4,
+          "offset": 4
         }
       ]
     }
-  ],
-  "equivalences": [
+  ]
+}
+
+---
+
+Data Structures
+
+CommonMember
+
+struct CommonMember {
+    std::string name;
+    std::string type;
+    uint64_t size;
+    uint64_t offset;
+};
+
+Represents an individual variable inside a COMMON block.
+
+---
+
+CommonBlockDef
+
+struct CommonBlockDef {
+    std::string name;
+    std::vector<CommonMember> members;
+};
+
+Represents a complete COMMON block definition.
+
+---
+
+Building the Project
+
+Prerequisites
+
+- C++17 compatible compiler
+- LLVM Flang installed
+- CMake 3.15 or later
+
+Build Steps
+
+mkdir build
+cd build
+
+cmake ..
+cmake --build .
+
+---
+
+Running the Collector
+
+collector sample.f90
+
+Expected output:
+
+{
+  "file": "sample.f90",
+  "common_blocks": [...]
+}
+
+---
+
+Error Handling
+
+The collector handles common failure scenarios such as:
+
+File Not Found
+
+Input file does not exist.
+
+Flang Not Available
+
+Unable to locate flang-new executable.
+
+Invalid Fortran Source
+
+Compiler parsing failed.
+
+No COMMON Blocks Present
+
+{
+  "file": "example.f90",
+  "common_blocks": []
+}
+
+---
+
+Sample Input
+
+REAL A
+INTEGER B
+
+COMMON /BLOCK1/ A, B
+
+Sample Output
+
+{
+  "file": "sample.f90",
+  "common_blocks": [
     {
-      "var_a": "X",
-      "index_a": 1,
-      "var_b": "A",
-      "index_b": 5,
-      "involves_common": true,
-      "common_block": "MYDATA",
-      "causes_extension": false,
-      "offset_shift": 0
+      "name": "BLOCK1",
+      "members": [
+        {
+          "name": "A",
+          "type": "REAL",
+          "size": 4,
+          "offset": 0
+        },
+        {
+          "name": "B",
+          "type": "INTEGER",
+          "size": 4,
+          "offset": 4
+        }
+      ]
     }
   ]
 }
-```
-
-### Field reference
-| Field | Type | Description |
-|---|---|---|
-| `name` | string | COMMON block name. `"__BLANK_COMMON__"` for unnamed blocks |
-| `total_size` | int | Total bytes in this block (sum of all variable sizes) |
-| `saved` | bool | Whether SAVE attribute was found for this block |
-| `type` | string | One of: `REAL`, `DOUBLE_PRECISION`, `INTEGER`, `LOGICAL`, `CHARACTER`, `COMPLEX` |
-| `kind` | int | Byte-width of the base type (e.g. 4 for REAL, 8 for REAL*8) |
-| `dimensions` | int[] | Empty for scalars; `[100]` for 1D; `[3,4]` for 3×4 array |
-| `size_bytes` | int | Total bytes for this variable: `kind × product(dimensions)` |
-| `offset` | int | Byte offset from start of COMMON block |
-| `char_len` | int | String length for CHARACTER type; 1 for all others |
 
 ---
 
-## Type Size Reference
+Future Enhancements
 
-| Fortran Type | kind | Bytes per element |
-|---|---|---|
-| `REAL` / `REAL*4` | 4 | 4 |
-| `REAL*8` / `DOUBLE PRECISION` | 8 | 8 |
-| `INTEGER` / `INTEGER*4` | 4 | 4 |
-| `INTEGER*8` | 8 | 8 |
-| `LOGICAL` | 4 | 4 |
-| `COMPLEX` | 8 | 8 (= 2 × REAL*4) |
-| `CHARACTER*n` | 1 | n (length in bytes) |
+- Support for nested program units
+- Enhanced type inference
+- COMMON block visualization
+- Integration with static analysis tools
+- Automatic migration assistance for legacy Fortran code
 
 ---
 
-## Edge Cases You Must Handle
+Team Contribution
 
-### 1. Blank COMMON
-```fortran
-COMMON X, Y, Z        ! no /name/ → name = "__BLANK_COMMON__"
-```
+Person 1 – Collector Module
 
-### 2. Arrays — size computation
-```fortran
-REAL*8 :: A(3,4)      ! size = 8 × 3 × 4 = 96 bytes
-```
+- Integrated LLVM Flang
+- Extracted symbol table information
+- Parsed COMMON block definitions
+- Computed memory layout metadata
+- Generated JSON output
 
-### 3. EQUIVALENCE offset shifts
-```fortran
-EQUIVALENCE (X(1), A(5))    ! A starts 16 bytes before X in memory
-```
-Detected and recorded in the `equivalences` array in JSON.
+Person 2 – Validator Module
 
-### 4. SAVE detection
-Both inline (`SAVE /BLOCKNAME/`) and attribute form (`SAVE` next to variable) must be detected.
+- Validated COMMON block consistency
+- Checked type compatibility
+- Detected layout mismatches
 
-### 5. Multiple blocks per file
-One subroutine can declare multiple COMMON blocks. All are extracted.
+Person 3 – CLI & Reporting
 
-### 6. REAL*8 alignment violations
-`REAL*8` at offset not divisible by 8 → flagged by Person 2, but you must compute offsets accurately so they can detect it.
+- Developed command-line interface
+- Implemented reporting features
+- Added testing and automation support
 
 ---
 
-## Test Files
+Conclusion
 
-All test cases are in `tests/fortran_samples/`:
-
-| File | Tests |
-|---|---|
-| `test01_file_a.f90` / `test01_file_b.f90` | Clean matching block (no errors) |
-| `test02_size_mismatch_a.f90` / `test02_size_mismatch_b.f90` | Size mismatch bug |
-| `test03_type_punning_a.f90` / `test03_type_punning_b.f90` | Type punning bug |
-| `test04_alignment.f90` | Alignment violation |
-| `test05_equivalence.f90` | EQUIVALENCE backward extension |
-| `test06_save_inconsistent_a.f90` / `test06_save_inconsistent_b.f90` | SAVE inconsistency |
-| `test07_blank_common.f90` | Unnamed COMMON block |
-| `test08_multidim.f90` | Multi-dimensional arrays |
-| `test09_character.f90` | CHARACTER type handling |
-| `test10_multiple_blocks.f90` | Multiple blocks in one file |
-
----
-
-## Integration Contract with Person 2 and 3
-
-- **Field names are frozen.** Do not rename any JSON key.
-- **`name` must be uppercase.** Normalize all block/variable names to uppercase.
-- **`__BLANK_COMMON__`** is the canonical name for unnamed blocks.
-- **`offset` is always from the start of the block**, not from the file start.
-- **`total_size` must equal the sum of all `size_bytes` values** in `variables`.
-- If a file has no COMMON blocks, emit `"common_blocks": []` (not null).
-- If flang fails on a file, still emit a valid JSON with an `"error"` key.
-
----
-
-## Project Structure
-
-```
-fortran_analyzer/
-├── include/
-│   ├── common_block.hpp          ← data structures
-│   ├── flang_runner.hpp          ← flang subprocess wrapper
-│   ├── symbol_dump_parser.hpp    ← parses flang dump output
-│   ├── equivalence_resolver.hpp  ← EQUIVALENCE handling
-│   └── json_serializer.hpp       ← JSON output
-├── src/
-│   ├── collector.cpp             ← single-file main()
-│   └── batch_collect.cpp         ← directory batch main()
-├── tests/
-│   └── fortran_samples/          ← 10 test .f90 files
-├── outputs/                      ← generated JSON goes here
-├── CMakeLists.txt
-├── build.sh
-└── README.md
-```
+The Collector module provides an automated and reliable method for extracting COMMON block metadata from legacy Fortran programs. The generated JSON serves as a standardized representation that supports validation, reporting, and future modernization efforts.
