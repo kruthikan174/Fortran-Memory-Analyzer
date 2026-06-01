@@ -2,23 +2,47 @@ Fortran COMMON Block Data Extraction Framework
 
 Overview
 
-This project provides an automated way to extract and represent Fortran "COMMON" block information in a structured JSON format. It is designed to assist in the analysis and modernization of legacy Fortran applications where shared memory through "COMMON" blocks is widely used.
+This project provides an automated solution for extracting and representing Fortran "COMMON" block information in a structured JSON format. The framework is intended to support analysis and modernization of legacy Fortran applications that rely on shared memory through "COMMON" blocks.
 
-The project is divided into three independent modules:
-
-1. Collector – Extracts COMMON block information from Fortran source files.
-2. Validator – Checks extracted data for inconsistencies and potential issues.
-3. CLI & Reporting – Provides user interaction and report generation.
-
-This repository contains the implementation of the Collector Module.
+This repository contains the implementation of the Collector Module, which serves as the data generation layer for the complete system.
 
 ---
 
-Problem Statement
+Project Architecture
 
-Legacy Fortran applications often rely on "COMMON" blocks to share variables across multiple program units. As projects grow larger, manually identifying memory layouts, variable offsets, and shared data structures becomes difficult.
+Fortran Source File
+        │
+        ▼
+   FlangRunner
+        │
+        ▼
+ Symbol Dump Output
+        │
+        ▼
+ SymbolDumpParser
+        │
+        ▼
+ CommonBlock Objects
+        │
+        ▼
+  JSON Exporter
+        │
+        ▼
+   Output JSON
 
-The objective of this module is to automatically identify COMMON blocks and generate machine-readable metadata that can be used for further validation and analysis.
+---
+
+Objective
+
+Legacy Fortran programs frequently use "COMMON" blocks to share variables between program units. Understanding the layout of these blocks manually can be difficult, especially in large codebases.
+
+The goal of this project is to:
+
+- Identify all COMMON blocks in a Fortran source file
+- Extract variable information from each block
+- Determine memory layout details
+- Generate a structured JSON representation
+- Provide metadata for validation and reporting modules
 
 ---
 
@@ -30,35 +54,9 @@ The Collector module performs the following tasks:
 - Invokes LLVM Flang compiler tools
 - Extracts symbol table information
 - Detects COMMON block definitions
-- Retrieves variable information
-- Calculates memory layout details
-- Exports structured JSON output
-
-The generated JSON acts as the input for downstream validation and reporting modules.
-
----
-
-System Workflow
-
-Fortran Source File
-        |
-        v
-   FlangRunner
-        |
-        v
- Symbol Dump Output
-        |
-        v
- SymbolDumpParser
-        |
-        v
- CommonBlock Objects
-        |
-        v
-  JSON Exporter
-        |
-        v
-   Output JSON
+- Retrieves variable metadata
+- Calculates offsets and storage sizes
+- Exports standardized JSON output
 
 ---
 
@@ -76,27 +74,25 @@ CMake| Build configuration
 
 Project Structure
 
-src/
+project-root/
 │
-├── FlangRunner.h
-├── FlangRunner.cpp
+├── src/
+│   ├── FlangRunner.h
+│   ├── FlangRunner.cpp
+│   ├── SymbolDumpParser.h
+│   ├── SymbolDumpParser.cpp
+│   ├── CommonBlockDef.h
+│   ├── JsonExporter.h
+│   ├── JsonExporter.cpp
+│   └── main.cpp
 │
-├── SymbolDumpParser.h
-├── SymbolDumpParser.cpp
+├── tests/
 │
-├── CommonBlockDef.h
+├── docs/
 │
-├── JsonExporter.h
-├── JsonExporter.cpp
+├── CMakeLists.txt
 │
-└── main.cpp
-
-tests/
-
-docs/
-
-CMakeLists.txt
-README.md
+└── README.md
 
 ---
 
@@ -104,19 +100,26 @@ Core Components
 
 1. FlangRunner
 
-Responsible for invoking the LLVM Flang compiler and collecting symbol dump information.
+Responsible for executing LLVM Flang and collecting the generated symbol dump.
 
 Example command:
 
 flang-new -fc1 -fdebug-dump-symbols sample.f90
 
-Output from the compiler is captured and forwarded to the parser.
+Responsibilities
+
+- Execute compiler commands
+- Capture compiler output
+- Report execution errors
+- Return raw symbol dump
 
 ---
 
 2. SymbolDumpParser
 
-Processes the compiler-generated symbol dump and extracts:
+Processes the compiler-generated symbol dump and extracts COMMON block information.
+
+Extracted Information
 
 - COMMON block names
 - Variable names
@@ -124,15 +127,15 @@ Processes the compiler-generated symbol dump and extracts:
 - Memory offsets
 - Storage sizes
 
-The extracted information is converted into internal C++ data structures.
+The parsed information is converted into internal C++ data structures.
 
 ---
 
 3. JSON Exporter
 
-Converts parsed data into a standardized JSON format.
+Converts extracted metadata into a standardized JSON format.
 
-Example:
+Example output:
 
 {
   "file": "sample.f90",
@@ -170,7 +173,7 @@ struct CommonMember {
     uint64_t offset;
 };
 
-Represents an individual variable inside a COMMON block.
+Represents a single variable within a COMMON block.
 
 ---
 
@@ -185,7 +188,7 @@ Represents a complete COMMON block definition.
 
 ---
 
-Building the Project
+Build Instructions
 
 Prerequisites
 
@@ -193,7 +196,7 @@ Prerequisites
 - LLVM Flang installed
 - CMake 3.15 or later
 
-Build Steps
+Build
 
 mkdir build
 cd build
@@ -203,52 +206,26 @@ cmake --build .
 
 ---
 
-Running the Collector
+Usage
+
+Run the collector on a Fortran source file:
 
 collector sample.f90
 
-Expected output:
-
-{
-  "file": "sample.f90",
-  "common_blocks": [...]
-}
+The program generates JSON metadata describing all detected COMMON blocks.
 
 ---
 
-Error Handling
+Example
 
-The collector handles common failure scenarios such as:
-
-File Not Found
-
-Input file does not exist.
-
-Flang Not Available
-
-Unable to locate flang-new executable.
-
-Invalid Fortran Source
-
-Compiler parsing failed.
-
-No COMMON Blocks Present
-
-{
-  "file": "example.f90",
-  "common_blocks": []
-}
-
----
-
-Sample Input
+Input
 
 REAL A
 INTEGER B
 
 COMMON /BLOCK1/ A, B
 
-Sample Output
+Generated Output
 
 {
   "file": "sample.f90",
@@ -275,40 +252,63 @@ Sample Output
 
 ---
 
-Future Enhancements
+Error Handling
 
-- Support for nested program units
-- Enhanced type inference
-- COMMON block visualization
-- Integration with static analysis tools
-- Automatic migration assistance for legacy Fortran code
+File Not Found
+
+Error: Input file not found.
+
+Flang Not Installed
+
+Error: flang-new executable not available.
+
+Invalid Fortran Source
+
+Error: Compiler parsing failed.
+
+No COMMON Blocks Present
+
+{
+  "file": "example.f90",
+  "common_blocks": []
+}
 
 ---
 
-Team Contribution
+Future Improvements
+
+- Support for additional Fortran standards
+- Improved type inference
+- COMMON block visualization
+- Static analysis integration
+- Automated migration support for legacy code
+
+---
+
+Team Contributions
 
 Person 1 – Collector Module
 
-- Integrated LLVM Flang
-- Extracted symbol table information
-- Parsed COMMON block definitions
-- Computed memory layout metadata
-- Generated JSON output
+- LLVM Flang integration
+- Symbol table extraction
+- COMMON block identification
+- Memory layout generation
+- JSON metadata export
 
 Person 2 – Validator Module
 
-- Validated COMMON block consistency
-- Checked type compatibility
-- Detected layout mismatches
+- Layout consistency checks
+- Type validation
+- Error detection
 
 Person 3 – CLI & Reporting
 
-- Developed command-line interface
-- Implemented reporting features
-- Added testing and automation support
+- Command-line interface
+- Reporting utilities
+- Testing and automation
 
 ---
 
 Conclusion
 
-The Collector module provides an automated and reliable method for extracting COMMON block metadata from legacy Fortran programs. The generated JSON serves as a standardized representation that supports validation, reporting, and future modernization efforts.
+The Collector module automates the extraction of COMMON block metadata from legacy Fortran source files. By generating a structured JSON representation of memory layouts, it provides a reliable foundation for validation, reporting, and future modernization efforts.
