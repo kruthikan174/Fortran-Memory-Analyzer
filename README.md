@@ -1,74 +1,258 @@
 Fortran COMMON Block Data Extraction Framework
 
-Overview
-
-This project provides an automated solution for extracting and representing Fortran "COMMON" block information in a structured JSON format. The framework is intended to support analysis and modernization of legacy Fortran applications that rely on shared memory through "COMMON" blocks.
-
-This repository contains the implementation of the Collector Module, which serves as the data generation layer for the complete system.
+A C++17-based framework for extracting memory layout information from legacy Fortran "COMMON" blocks using LLVM Flang and exporting the results as structured JSON metadata.
 
 ---
 
-Project Architecture
+Table of Contents
 
-Fortran Source File
-        │
-        ▼
-   FlangRunner
-        │
-        ▼
- Symbol Dump Output
-        │
-        ▼
- SymbolDumpParser
-        │
-        ▼
- CommonBlock Objects
-        │
-        ▼
-  JSON Exporter
-        │
-        ▼
-   Output JSON
+- "Introduction" (#introduction)
+- "Problem Statement" (#problem-statement)
+- "Project Objectives" (#project-objectives)
+- "System Architecture" (#system-architecture)
+- "Module Responsibilities" (#module-responsibilities)
+- "Workflow" (#workflow)
+- "Implementation Details" (#implementation-details)
+- "Data Structures" (#data-structures)
+- "JSON Schema" (#json-schema)
+- "Project Structure" (#project-structure)
+- "Build Instructions" (#build-instructions)
+- "Usage" (#usage)
+- "Sample Input and Output" (#sample-input-and-output)
+- "Error Handling" (#error-handling)
+- "Design Decisions" (#design-decisions)
+- "Future Enhancements" (#future-enhancements)
+- "Team Contributions" (#team-contributions)
 
 ---
 
-Objective
+Introduction
 
-Legacy Fortran programs frequently use "COMMON" blocks to share variables between program units. Understanding the layout of these blocks manually can be difficult, especially in large codebases.
+Legacy scientific and engineering applications often contain large Fortran codebases developed over several decades. A significant portion of these applications use "COMMON" blocks to share variables between program units.
 
-The goal of this project is to:
+Manually identifying the memory layout of "COMMON" blocks becomes increasingly difficult as project size grows. This framework automates the extraction process and produces a structured representation that can be consumed by validation and reporting tools.
 
-- Identify all COMMON blocks in a Fortran source file
-- Extract variable information from each block
-- Determine memory layout details
-- Generate a structured JSON representation
-- Provide metadata for validation and reporting modules
+The Collector module acts as the foundation of the entire system by generating accurate metadata describing each detected "COMMON" block.
+
+---
+
+Problem Statement
+
+Fortran "COMMON" blocks provide a mechanism for sharing variables across program units through a common memory region.
+
+Example:
+
+REAL TEMP
+INTEGER COUNT
+
+COMMON /DATA/ TEMP, COUNT
+
+In large legacy systems:
+
+- Thousands of COMMON blocks may exist.
+- Variable ordering must remain consistent.
+- Memory layout mismatches can cause runtime errors.
+- Manual inspection is time-consuming and error-prone.
+
+The objective of this project is to automatically extract this information and represent it in a machine-readable format.
+
+---
+
+Project Objectives
+
+The Collector module is responsible for:
+
+- Reading Fortran source files.
+- Invoking LLVM Flang compiler infrastructure.
+- Extracting symbol table information.
+- Identifying COMMON block definitions.
+- Determining variable types and sizes.
+- Computing memory offsets.
+- Exporting standardized JSON metadata.
+
+---
+
+System Architecture
+
+┌─────────────────────┐
+│  Fortran Source     │
+│   (.f / .f90)       │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│    FlangRunner      │
+│ Executes LLVM Flang │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│ Symbol Dump Output  │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│ SymbolDumpParser    │
+│ Parses Dump Data    │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│ CommonBlock Objects │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│   JSON Exporter     │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│ Structured JSON     │
+└─────────────────────┘
 
 ---
 
 Module Responsibilities
 
-The Collector module performs the following tasks:
+FlangRunner
 
-- Reads Fortran source files (".f", ".f90")
-- Invokes LLVM Flang compiler tools
-- Extracts symbol table information
-- Detects COMMON block definitions
-- Retrieves variable metadata
-- Calculates offsets and storage sizes
-- Exports standardized JSON output
+The FlangRunner module serves as an interface between the application and the LLVM Flang compiler.
+
+Responsibilities
+
+- Execute compiler commands.
+- Capture compiler output.
+- Handle execution failures.
+- Return raw symbol dump data.
+
+Example Command
+
+flang-new -fc1 -fdebug-dump-symbols sample.f90
 
 ---
+
+SymbolDumpParser
+
+The SymbolDumpParser processes compiler-generated symbol information and converts it into structured C++ objects.
+
+Extracted Information
+
+- COMMON block names
+- Variable names
+- Data types
+- Memory offsets
+- Storage sizes
+
+---
+
+JSON Exporter
+
+The JSON Exporter serializes extracted metadata into a standard format that can be consumed by other modules.
+
+---
+
+Workflow
+
+Step 1: Read Source File
+
+Input:
+
+REAL A
+INTEGER B
+
+COMMON /BLOCK1/ A, B
+
+Step 2: Generate Symbol Dump
+
+LLVM Flang generates symbol table information.
+
+Step 3: Parse Symbols
+
+Relevant COMMON block metadata is extracted.
+
+Step 4: Construct Internal Objects
+
+Objects representing COMMON blocks and variables are created.
+
+Step 5: Export JSON
+
+Structured JSON output is generated.
+
+---
+
+Implementation Details
 
 Technologies Used
 
 Technology| Purpose
 C++17| Core implementation
 LLVM Flang| Symbol extraction
-STL| Data structures and utilities
+STL| Containers and utilities
 nlohmann/json| JSON serialization
-Regex| Parsing compiler output
-CMake| Build configuration
+CMake| Build system
+Regular Expressions| Symbol parsing
+
+---
+
+Data Structures
+
+CommonMember
+
+Represents an individual variable within a COMMON block.
+
+struct CommonMember {
+    std::string name;
+    std::string type;
+    uint64_t size;
+    uint64_t offset;
+};
+
+Attributes
+
+Field| Description
+name| Variable name
+type| Fortran data type
+size| Storage size in bytes
+offset| Position within COMMON block
+
+---
+
+CommonBlockDef
+
+Represents a complete COMMON block definition.
+
+struct CommonBlockDef {
+    std::string name;
+    std::vector<CommonMember> members;
+};
+
+---
+
+JSON Schema
+
+Root Object
+
+{
+  "file": "sample.f90",
+  "common_blocks": []
+}
+
+COMMON Block
+
+{
+  "name": "BLOCK1",
+  "members": []
+}
+
+Member Definition
+
+{
+  "name": "A",
+  "type": "REAL",
+  "size": 4,
+  "offset": 0
+}
 
 ---
 
@@ -81,14 +265,16 @@ project-root/
 │   ├── FlangRunner.cpp
 │   ├── SymbolDumpParser.h
 │   ├── SymbolDumpParser.cpp
-│   ├── CommonBlockDef.h
 │   ├── JsonExporter.h
 │   ├── JsonExporter.cpp
+│   ├── CommonBlockDef.h
 │   └── main.cpp
 │
 ├── tests/
 │
 ├── docs/
+│
+├── examples/
 │
 ├── CMakeLists.txt
 │
@@ -96,105 +282,13 @@ project-root/
 
 ---
 
-Core Components
-
-1. FlangRunner
-
-Responsible for executing LLVM Flang and collecting the generated symbol dump.
-
-Example command:
-
-flang-new -fc1 -fdebug-dump-symbols sample.f90
-
-Responsibilities
-
-- Execute compiler commands
-- Capture compiler output
-- Report execution errors
-- Return raw symbol dump
-
----
-
-2. SymbolDumpParser
-
-Processes the compiler-generated symbol dump and extracts COMMON block information.
-
-Extracted Information
-
-- COMMON block names
-- Variable names
-- Data types
-- Memory offsets
-- Storage sizes
-
-The parsed information is converted into internal C++ data structures.
-
----
-
-3. JSON Exporter
-
-Converts extracted metadata into a standardized JSON format.
-
-Example output:
-
-{
-  "file": "sample.f90",
-  "common_blocks": [
-    {
-      "name": "BLOCK1",
-      "members": [
-        {
-          "name": "A",
-          "type": "REAL",
-          "size": 4,
-          "offset": 0
-        },
-        {
-          "name": "B",
-          "type": "INTEGER",
-          "size": 4,
-          "offset": 4
-        }
-      ]
-    }
-  ]
-}
-
----
-
-Data Structures
-
-CommonMember
-
-struct CommonMember {
-    std::string name;
-    std::string type;
-    uint64_t size;
-    uint64_t offset;
-};
-
-Represents a single variable within a COMMON block.
-
----
-
-CommonBlockDef
-
-struct CommonBlockDef {
-    std::string name;
-    std::vector<CommonMember> members;
-};
-
-Represents a complete COMMON block definition.
-
----
-
 Build Instructions
 
 Prerequisites
 
-- C++17 compatible compiler
-- LLVM Flang installed
-- CMake 3.15 or later
+- LLVM Flang
+- CMake 3.15+
+- C++17 Compatible Compiler
 
 Build
 
@@ -208,15 +302,17 @@ cmake --build .
 
 Usage
 
-Run the collector on a Fortran source file:
+Run the collector:
 
 collector sample.f90
 
-The program generates JSON metadata describing all detected COMMON blocks.
+Output:
+
+output.json
 
 ---
 
-Example
+Sample Input and Output
 
 Input
 
@@ -225,7 +321,7 @@ INTEGER B
 
 COMMON /BLOCK1/ A, B
 
-Generated Output
+Output
 
 {
   "file": "sample.f90",
@@ -254,61 +350,77 @@ Generated Output
 
 Error Handling
 
-File Not Found
+Missing File
 
 Error: Input file not found.
 
 Flang Not Installed
 
-Error: flang-new executable not available.
+Error: flang-new executable not found.
 
-Invalid Fortran Source
+Invalid Source File
 
-Error: Compiler parsing failed.
+Error: Failed to parse Fortran source.
 
-No COMMON Blocks Present
+No COMMON Blocks Found
 
 {
-  "file": "example.f90",
+  "file": "test.f90",
   "common_blocks": []
 }
 
 ---
 
-Future Improvements
+Design Decisions
 
-- Support for additional Fortran standards
-- Improved type inference
-- COMMON block visualization
-- Static analysis integration
-- Automated migration support for legacy code
+Why LLVM Flang?
+
+LLVM Flang provides accurate compiler-level symbol information and avoids implementing a custom Fortran parser.
+
+Why JSON?
+
+JSON is lightweight, language-independent, and easy to integrate with downstream validation and reporting tools.
+
+Why Separate Components?
+
+A modular architecture improves maintainability, testing, and future extensibility.
+
+---
+
+Future Enhancements
+
+- Support for additional Fortran standards.
+- Visualization of COMMON block layouts.
+- Detection of alignment and padding issues.
+- Integration with static analysis pipelines.
+- Automatic migration recommendations.
 
 ---
 
 Team Contributions
 
-Person 1 – Collector Module
+Person 1 — Collector Module
 
-- LLVM Flang integration
-- Symbol table extraction
-- COMMON block identification
+- Flang integration
+- Symbol extraction
+- COMMON block detection
 - Memory layout generation
-- JSON metadata export
+- JSON export
 
-Person 2 – Validator Module
+Person 2 — Validator Module
 
-- Layout consistency checks
-- Type validation
-- Error detection
+- Consistency verification
+- Type checking
+- Layout validation
 
-Person 3 – CLI & Reporting
+Person 3 — CLI and Reporting
 
 - Command-line interface
-- Reporting utilities
-- Testing and automation
+- Report generation
+- Testing framework
 
 ---
 
 Conclusion
 
-The Collector module automates the extraction of COMMON block metadata from legacy Fortran source files. By generating a structured JSON representation of memory layouts, it provides a reliable foundation for validation, reporting, and future modernization efforts.
+The Fortran COMMON Block Data Extraction Framework provides an automated mechanism for extracting memory layout information from legacy Fortran programs. The generated metadata forms the foundation for validation, reporting, and modernization workflows, reducing manual effort and improving analysis accuracy.
