@@ -9,6 +9,7 @@
 - [Introduction](#introduction)
 - [Problem Statement](#problem-statement)
 - [System Architecture](#system-architecture)
+- [Project Demonstration](#project-demonstration)
 - [Module Responsibilities](#module-responsibilities)
 - [Data Structures](#data-structures)
 - [JSON Schema](#json-schema)
@@ -93,6 +94,14 @@ This framework automatically extracts this information and represents it in a ma
 │  Structured JSON    │
 └─────────────────────┘
 ```
+
+---
+
+## Project Demonstration
+
+To watch the compilation execution, comprehensive test assertions, real-world library scanning (LAPACK 3.12.0), and the resulting migration engine execution, view our full pipeline demo video here:
+
+▶️ **[Watch the Project Demonstration Video on Google Drive](https://drive.google.com/drive/u/2/folders/1q2MAoKCGBXtvyBuFNK8c2PLwFeyo_srz?safe=active)**
 
 ---
 
